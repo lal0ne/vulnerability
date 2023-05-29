@@ -1,0 +1,36 @@
+<project name="weblogic_CVE_2020_2551" basedir=".">
+  <property name="lib.dir"     value="src/lib"/>
+  <property name="src.dir"     value="src"/>
+  <property name="build.dir"   value="build"/>
+  <property name="classes.dir" value="${build.dir}/classes"/>
+  <property name="jar.dir"     value="${build.dir}/jar"/>
+  <property name="jar.dir.tmp" value="${build.dir}/jar.tmp"/>
+  <property name="main-class"  value="com/payload/Main"/>
+
+  <path id="classpath">
+    <fileset dir="${lib.dir}" includes="**/*.jar"/>
+  </path>
+
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+  </target>
+
+  <target name="compile">
+    <mkdir dir="${classes.dir}"/>
+    <javac srcdir="${src.dir}" target="1.6" source="1.6" destdir="build/classes" classpathref="classpath"/>
+  </target>
+
+  <target name="jar" depends="compile">
+    <mkdir dir="${jar.dir}"/>
+    <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
+        <manifest>
+            <attribute name="Main-Class" value="com/payload/Main" />
+        </manifest>
+      <zipgroupfileset dir="src/lib" />
+    </jar>
+  </target>
+
+  <target name="run" depends="jar">
+    <java jar="${jar.dir}/${ant.project.name}.jar" fork="true"/>
+  </target>
+</project>
