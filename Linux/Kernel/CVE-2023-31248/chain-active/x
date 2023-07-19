@@ -1,0 +1,4 @@
+#!/bin/sh
+chown root:root /tmp/monke
+chmod 777 /tmp/monke
+chmod u+s /tmp/monke
