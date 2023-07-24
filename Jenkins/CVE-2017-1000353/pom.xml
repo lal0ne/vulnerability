@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.vulhub</groupId>
+  <artifactId>CVE-2017-1000353</artifactId>
+  <version>1.1-SNAPSHOT</version>
+
+  <name>CVE-2017-1000353</name>
+  <!-- FIXME change it to the project's website -->
+  <url>http://www.vulhub.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.7</maven.compiler.source>
+    <maven.compiler.target>1.7</maven.compiler.target>
+  </properties>
+
+  <repositories>
+    <repository>
+      <id>repo.jenkins-ci.org</id>
+      <url>https://repo.jenkins-ci.org/public/</url>
+      <!-- allow snapshots -->
+    </repository>
+  </repositories>
+
+  <dependencies>
+      <!-- https://mvnrepository.com/artifact/commons-collections/commons-collections -->
+      <dependency>
+          <groupId>commons-collections</groupId>
+          <artifactId>commons-collections</artifactId>
+          <version>3.2.1</version>
+      </dependency>
+      <!-- https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils -->
+      <dependency>
+          <groupId>commons-beanutils</groupId>
+          <artifactId>commons-beanutils</artifactId>
+          <version>1.8.3</version>
+      </dependency>
+
+      <dependency><!-- until we get this version through Stapler -->
+        <groupId>org.kohsuke.stapler</groupId>
+        <artifactId>json-lib</artifactId>
+        <version>2.4-jenkins-2</version>
+      </dependency>
+  </dependencies>
+
+  <build>
+      <plugins>
+          <plugin>
+              <artifactId>maven-assembly-plugin</artifactId>
+              <configuration>
+                  <finalName>${project.artifactId}-${project.version}-all</finalName>
+                  <appendAssemblyId>false</appendAssemblyId>
+                  <archive>
+                      <manifest>
+                          <mainClass>org.vulhub.Payload</mainClass>
+                      </manifest>
+                  </archive>
+                  <descriptorRefs>
+                      <descriptorRef>jar-with-dependencies</descriptorRef>
+                  </descriptorRefs>
+              </configuration>
+              <executions>
+                  <execution>
+                      <id>make-assembly</id>
+                      <phase>package</phase>
+                      <goals>
+                          <goal>single</goal>
+                      </goals>
+                  </execution>
+              </executions>
+          </plugin>
+      </plugins>
+  </build>
+</project>
