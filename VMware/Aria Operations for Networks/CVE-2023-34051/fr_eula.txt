@@ -1,0 +1,503 @@
+CONDITIONS GÉNÉRALES DE VMWARE
+Dernière mise à jour : 16 juin 2022
+En téléchargeant ou en utilisant une Offre, le Client accepte d'être lié 
+par les dispositions du Contrat. 
+1. OFFRES.
+1.1. Conditions applicables. Les conditions de la Commande et les présentes 
+Conditions Générales, y compris les Annexes et Avis relatifs aux Offres 
+applicables (collectivement, le « Contrat ») régissent l'utilisation des Offres 
+par le Client. L'ordre de priorité décroissant suivant s'applique : (a) la 
+Commande ; (b) les Conditions Générales ; (c) les Annexes ; et (d) les Avis 
+relatifs aux Offres. 
+1.2. Utilisateurs. Le Client est responsable du respect du Contrat par ses 
+Utilisateurs. 
+1.3. Restrictions. Le Client peut utiliser les Offres uniquement pour son 
+usage interne et pour le bénéfice de ses Affiliés. Les Affiliés ne peuvent 
+pas utiliser les Offres. Le Client ne peut pas revendre ses droits sur des 
+Offres ni concéder des sous-licences sur celles-ci. Le Client ne peut pas 
+utiliser les Offres en tant que fournisseur de services applicatifs, bureau 
+de services, service informatique hébergé ou dans une capacité semblable 
+pour des tiers.
+1.4. Évaluation. Le Client peut utiliser les Offres pour effectuer des tests de 
+performance en interne ainsi que des études d'évaluation. Le Client ne peut 
+publier ou distribuer des résultats d'étude qu'avec l'accord de VMware. Le 
+Client peut adresser des demandes à VMware en envoyant un e-mail à 
+benchmark@vmware.com.
+1.5. Evaluations. Les Evaluations ont une durée de 30 jours (sauf mention 
+écrite différente de VMware). Le Client ne peut pas avoir accès aux données 
+de l'Evaluation une fois celle-ci terminée. Les Evaluations sont fournies 
+« EN L'ETAT » sans indemnisation, assistance, engagement de niveau de service 
+ou garantie de quelque nature que ce soit, explicite ou implicite. 
+2. COMMANDES ET PAIEMENTS. 
+2.1. Commandes. Les Commandes sont opposables aux parties lorsque VMware 
+les accepte, ce qui est réputé avoir lieu à la Livraison. 
+2.2. Bons de commande. Les bons de commande n'ont pas besoin d'être signés 
+pour être valides. Les conditions contenues dans un bon de commande ou un 
+autre formulaire commercial ne s'appliquent pas. 
+2.3. Absence de remboursement. Toutes les Commandes sont non remboursables 
+et non annulables sauf si cela est explicitement prévu dans le Contrat.
+2.4. Dépassements. Le Client doit payer toutes les redevances d'utilisation 
+des Offres, y compris les montants associés aux fonctionnalités 
+complémentaires et les frais occasionnés par l'utilisation. VMware peut 
+facturer les frais de compteur ou de dépassement directement au Client, même 
+si ce dernier a initialement acheté les Offres par le biais d'un revendeur 
+agréé VMware.
+2.5. Commandes directes. Cet article 2.5 (Commandes directes) s'applique 
+uniquement aux Commandes passées directement à VMware. Si le Client achète 
+des droits à des Offres par l'intermédiaire d'un revendeur agréé VMware, 
+différentes conditions en matière de facturation, paiement et taxes peuvent 
+s'appliquer.
+2.5.1. Paiements. Sauf si autrement précisé dans une Commande, les frais 
+relatifs aux Offres seront régis par la liste des tarifs applicable au moment 
+de la facturation. Le Client doit payer tous les frais non contestés et les 
+dépenses approuvées dans les 30 jours suivant la date de la facture. Après 
+30 jours, des intérêts s'accumuleront au taux de 1,5 % par mois ou au taux 
+légal le plus élevé, selon le moins élevé des deux. 
+2.5.2. Litiges. Pour contester des redevances de bonne foi, le Client doit 
+informer VMware par écrit des motifs du litige avant la date d'échéance du 
+paiement. Les parties doivent négocier de bonne foi afin de résoudre le conflit 
+dès que cela est raisonnablement possible. VMware n'interrompra pas ou ne 
+résiliera pas l'accès du Client à une Offre, quelle qu'elle soit, pour cause 
+de frais non payés faisant l'objet d'un litige pendant que le Client et 
+VMware négocient pour résoudre le litige.
+2.5.3. Taxes. Les taxes ne sont pas incluses dans les frais. Le Client doit 
+payer toutes les taxes ou les rembourser à VMware. Si le Client est tenu de 
+retenir des taxes, il doit majorer ses paiements afin que VMware reçoive tous 
+les montants dans leur intégralité. Si l'adresse du client est sise en dehors 
+des États-Unis, VMware considèrera l'adresse de facturation du Client comme 
+le lieu de livraison à des fins de TVA.
+3. DURÉE.
+3.1. Durée. Le Contrat s'applique aux Offres à partir de la date d'entrée 
+en vigueur de la Commande et jusqu'à la résiliation du droit du Client sur 
+les Offres comme indiqué dans le présent Contrat.
+3.2. Suspension provisoire. En cas de risque pour la sécurité d'un Service ou 
+de ses utilisateurs, VMware pourra suspendre l'utilisation de ce Service par 
+le Client.
+3.3. Résiliation motivée. L'une ou l'autre partie peut résilier le Contrat 
+(en totalité ou en partie) ou le droit du Client à une Offre en vertu du 
+contrat avec effet immédiat par notification écrite si l'autre partie : (a) 
+enfreint de manière substantielle une disposition, quelle qu'elle soit, du 
+Contrat et n'y remédie pas dans les 30 jours suivant la réception d'un avis 
+écrit ; ou (b) devient insolvable ou fait l'objet d'une procédure de 
+déclaration de faillite. 
+3.4. Effet de la résiliation. À la résiliation du Contrat, dans sa totalité ou 
+en partie : (a) tous les droits sur les Offres applicables prennent 
+immédiatement fin ; (b) le Client doit cesser d'utiliser ces Offres et en 
+détruire toutes les copies ; et (c) chaque partie doit restituer ou détruire 
+toute Information confidentielle de l'autre partie qu'il contrôle (autres 
+que les informations que la loi impose de conserver). Toute disposition 
+dont les parties entendent qu'elles demeurent en vigueur après la résiliation 
+du Contrat demeureront en vigueur.
+4. INFORMATIONS CONFIDENTIELLES.
+4.1. Protection. Le Destinataire doit protéger les Informations Confidentielles 
+du Divulgateur au moins aussi soigneusement qu'il protège ses propres 
+Informations Confidentielles, avec un soin raisonnable qui n'est pas moindre. 
+Le Destinataire ne doit pas utiliser les Informations Confidentielles du 
+Divulgateur, sauf pour exercer ses droits et remplir ses obligations en vertu du 
+Contrat. Le Destinataire peut uniquement divulguer les Informations 
+Confidentielles aux Affiliés, employés et prestataires du Destinataire qui ont 
+besoin de connaître les Informations Confidentielles aux fins du Contrat et 
+qui sont soumis à un devoir de confidentialité au moins aussi restrictif que 
+celui dans cet article 4 (Informations Confidentielles).
+4.2. Exceptions. Les obligations du Destinataire en vertu de l'article 4.1 
+(Protection) ne s'appliquent pas si les informations : (a) sont licitement 
+connues par le Destinataire au moment de la divulgation sans aucune obligation 
+de confidentialité ; (b) sont légalement divulguées au Destinataire par un 
+tiers sans restrictions de confidentialité ; (c) deviennent publiquement 
+disponibles sans que le Destinataire ne soit en cause ; ou (d) sont développées 
+de façon indépendante par le Destinataire sans accès à, ou utilisation, des 
+Informations Confidentielles du Divulgateur.
+4.3. Mesure injonctive. Rien dans le présent Contrat ne limite le droit d'une 
+partie à demander une réparation équitable en cas de violation du présent 
+article 4 (Informations Confidentielles).
+5. PROPRIÉTÉ.
+5.1. Contenu du Client. Le Client conserve tous les Droits de propriété 
+intellectuelle relatifs au Contenu du Client.
+5.2. Propriété Intellectuelle de VMware. VMware conserve tous les Droits de 
+Propriété Intellectuelle sur les Offres, y compris toute amélioration, 
+optimisation, modification et œuvre dérivée. Si le Client fournit des avis 
+sur les Offres, VMware pourra utiliser ces avis sans restriction.
+5.3. Réserve de droits. Excepté comme expressément indiqué dans le Contrat, 
+le présent Contrat n'accorde à aucune partie des droits, implicites ou autres, 
+quels qu'ils soient, sur le contenu ou la propriété intellectuelle de 
+l'autre partie. 
+6. GARANTIES LIMITÉES. 
+6.1. Progiciel et Services Cloud. VMware garantit que le Progiciel et les 
+Services Cloud se conformeront substantiellement à la Documentation : (a) en 
+ce qui concerne le Progiciel, pendant 90 jours suivant la Livraison ; ou (b) pour 
+les Services Cloud, pendant la Durée d'Abonnement. Le Client doit 
+correctement installer et utiliser les Offres sans modification et conformément 
+à la Documentation. Le Client doit informer VMware de toute violation 
+présumée de cette garantie pendant la période de garantie applicable. À titre 
+d'unique recours pour le Client en cas de violation de cette garantie, VMware 
+devra soit : (1) corriger toute erreur reproductible dans le Progiciel ou le 
+Service Cloud ; soit (2) résilier le Progiciel ou le Service Cloud et rembourser 
+les redevances de licence applicables (pour le Progiciel) ou les frais prépayés 
+inutilisés (pour les Services Cloud).
+6.2. Services Professionnels et Services de Support. VMware garantit que les 
+Services Professionnels et les Services de Support seront exécutés de manière 
+professionnelle dans le respect des normes du secteur. Le Client doit informer 
+VMware dans les 30 jours suivant une violation présumée de cette garantie. 
+À titre d'unique recours pour le Client en cas de manquement à cette garantie, 
+VMware doit soit : (a) rectifier le manquement ; soit (b) résilier le service 
+applicable et rembourser tous les frais prépayés inutilisés pour ce service.
+6.3. Limitations des garanties. Sauf en ce qui concerne les garanties limitées 
+dans cet article 6 (Garanties limitées), dans toute la mesure permise par la 
+loi, VMware, pour lui-même et au nom de ses fournisseurs, rejette toutes 
+garanties et conditions, qu'elles soient explicites, implicites ou 
+réglementaires, y compris toute garantie de qualité marchande, de qualité 
+satisfaisante, d'adéquation à un usage particulier, de titre, de 
+non-contrefaçon et toute garantie découlant d'une transaction ou d'une 
+exécution en relation avec les Offres. Ni VMware ni ses fournisseurs ne 
+garantissent que les Offres fonctionneront sans interruption, qu'elles 
+seront exemptes de défauts ou d'erreurs, ou qu'elles répondront (ou 
+qu'elles sont destinées à répondre) aux exigences du Client. 
+7. INDEMNISATION. 
+7.1. Défense et Indemnisation. Sous réserve du reste du présent article 7 
+(Indemnisation), VMware : (a) défendra le Client contre toute Action en 
+Contrefaçon ; et (b) indemnisera le Client pour tout montant finalement 
+accordé à son encontre par un tribunal compétent ou une agence 
+gouvernementale, ou convenu dans le cadre d'un règlement, en relation 
+avec l'Action en Contrefaçon. 
+7.2. Exigences. Le Client doit informer VMware sans retard en cas d'Action en 
+Contrefaçon et coopérer raisonnablement avec les demandes d'assistance de 
+VMware. VMware aura le contrôle total de la défense et du règlement de 
+l'Action en Contrefaçon.
+7.3. Exclusions. Aux termes du présent article 7(Indemnisation), VMware n'a 
+aucune obligation dans le cas d'une Action en Contrefaçon basée sur : (a) 
+une combinaison de Supports Indemnisés et de supports autres que ceux de 
+VMware ; (b) l'utilisation d'une ancienne version de Supports Indemnisés 
+lorsque l'utilisation d'une version plus récente aurait évité la 
+contrefaçon ; (c) toute modification des Supports Indemnisés autres que 
+ceux fabriqués par VMware ; (d) tout Livrable fourni par VMware conformément 
+aux spécifications du Client ; (e) toute réclamation se rapportant à un 
+logiciel libre ou à une technologie de logiciel gratuit qui n'est pas 
+intégré(e) aux Offres par VMware ; ou (f) tout Support Indemnisé fourni 
+sur la base d'une version sans frais, bêta ou d'évaluation.
+7.4. Recours. Si les Supports Indemnisés font, ou sont susceptibles de 
+faire, de l'avis de VMware, l'objet d'une Action en Contrefaçon, VMware 
+doit, selon son choix et à ses frais : (a) fournir au Client les droits 
+nécessaires pour continuer à utiliser les Supports Indemnisés ; ou (b) 
+modifier ou remplacer les Supports Indemnisés pour qu'ils ne portent plus 
+atteinte au droit d'auteur. Si ces recours ne sont pas commercialement viables, 
+VMware pourra résilier le droit du Client sur les Supports Indemnisés et 
+rembourser tous les éléments suivants qui s'appliquent : 
+(1) les frais prépayés pour les Services Cloud ou le Progiciel par abonnement, 
+au prorata de la portion restante de la durée de l'Abonnement alors en vigueur ;
+(2) les frais payés pour des Licences perpétuelles ou Livrables, moins 
+l'amortissement linéaire sur une durée de vie utile de trois ans ; et 
+(3) les frais prépayés inutilisés pour les Services de Support interrompus. 
+7.5. Unique recours. Cet article 7 (Indemnisation) déclare l'unique recours du 
+Client et la responsabilité entière de VMware pour les Actions en Contrefaçon. 
+8. LIMITATION DE RESPONSABILITÉ. 
+8.1. Clause de non-responsabilité. Dans toutes les limites permises par la loi, 
+aucune des parties ne sera responsable de la perte de bénéfices ou 
+d'opportunités commerciales, perte d'utilisation, perte de données, perte de 
+renommée, interruption d'activité ou de tout dommage indirect, spécial, 
+accessoire ou consécutif en vertu de quelque théorie de responsabilité 
+qu'elle soit. Cette limitation s'appliquera qu'une partie ait été avertie 
+ou non de la possibilité de tels dommages et que le recours atteigne ou 
+non son objectif principal. 
+8.2. Plafonnement de la responsabilité financière. La responsabilité cumulée 
+de chaque partie aux termes du présent Contrat ne pourra pas dépasser les 
+sommes payées ou payables par le Client pour l'Offre donnant lieu à la 
+réclamation dans les 12 mois précédant l'événement à l'origine de 
+l'action, sauf en ce qui concerne les Licences perpétuelles pour lesquelles 
+la responsabilité cumulée de chaque partie ne pourra pas excéder les frais 
+de licence payés pour le Progiciel à l'origine de l'action. La 
+responsabilité cumulée de VMware pour une Évaluation ne pourra pas 
+excéder 5 000 USD.
+8.3. Exclusions. Les limitations de responsabilité présentées dans les 
+articles 8.1 (Clause de non-responsabilité) et 8.2 (Plafonnement de la 
+responsabilité financière) ne s'appliqueront pas aux éléments suivants : 
+(a) obligations d'indemnisation de VMware en vertu de l'article 7 
+(Indemnisation) ; (b) la violation par une partie des Droits de propriété 
+intellectuelle de l'autre partie ; (c) la violation par le Client de l'article 
+2 de l'Annexe relative aux Services Cloud (Utilisation acceptable) ; ou 
+toute responsabilité ne pouvant pas être limitée par la loi.
+8.4. Autres limitations. La responsabilité de VMware pour tout logiciel tiers 
+intégré au Progiciel ou aux Services Cloud est assujettie au présent article 
+8 (Limitation de responsabilité). Les fournisseurs de VMware n'ont aucune 
+responsabilité aux termes du présent Contrat et le Client ne peut intenter 
+aucune action à leur encontre. VMware n'a aucune responsabilité en ce qui 
+concerne un Contenu de tiers, quel qu'il soit.
+9. UTILISATION DES DONNÉES ET CONFIDENTIALITÉ.
+9.1. Données Personnelles. Si VMware agit en tant que responsable du traitement 
+des Données Personnelles, VMware traitera les Données Personnelles 
+conformément à l'Avenant sur le traitement des données.
+9.2. Données de compte, d'opérations et d'utilisation. VMware recueille les 
+informations de contact et d'achat du Client afin de gérer le compte du 
+Client et de remplir les Commandes. VMware traite également : (a) des 
+informations nécessaires pour faciliter la fourniture et l'exploitation des 
+Offres, vérifier la conformité avec les conditions du Contrat, facturer et 
+fournir des Services de Support ; et (b) des données de configuration, de 
+performance et d'utilisation afin d'améliorer les produits et services VMware, 
+et à d'autres fins d'analyse détaillées dans les Avis relatifs aux Offres. 
+Dans la mesure où n'importe lesquelles de ces informations incluent des 
+informations qui identifient une personne spécifique, VMware traitera ces 
+informations conformément à l'Avis de confidentialité des produits et 
+services de VMware disponible sur la page www.vmware.com/fr/help/privacy.html.
+9.3. Demandes de support et Services professionnels. Il incombe au Client de 
+prendre les mesures nécessaires pour protéger toute information sensible ou 
+Donnée Personnelle qu'il fournit à VMware lorsqu'il reçoit des Services de 
+Support ou des Services Professionnels. Ces mesures peuvent inclure 
+l'obscurcissement ou la suppression de ces informations ou la collaboration 
+avec VMware au moment de l'envoi afin de limiter la divulgation.
+9.4. Exigences de divulgation. VMware peut divulguer le Contenu du Client ou 
+des Informations Confidentielles si VMware y est contraint par la loi ou par 
+ordre d'un organisme judiciaire ou administratif compétent (une 
+« Injonction »). Sauf s'il a l'interdiction légale de le faire, VMware doit en 
+informer le Client et lui fournir une copie de l'Injonction. Si l'Injonction 
+concerne les Services Cloud, VMware doit (i) informer l'autorité compétente 
+que VMware est un fournisseur de services agissant pour le compte du 
+Client et que toutes les demandes d'accès au Contenu du Client doivent 
+être adressées par écrit au contact indiqué par le Client (ou si aucun 
+contact n'est indiqué dans un délai approprié, au service juridique du 
+Client) et (ii) fournir un accès au Contenu du Client uniquement avec 
+l'autorisation du Client. Si le Client l'exige, et aux frais de ce dernier, 
+VMware peut prendre des mesures raisonnables pour contester l'Injonction. 
+Si VMware a l'interdiction légale d'informer le Client de l'Injonction, 
+VMware doit évaluer la validité de l'Injonction et, s'il pense que celle-ci 
+n'est pas légale, il doit la contester. VMware doit limiter la portée de toute 
+divulgation aux informations minimales requises pour respecter l'Injonction. 
+10. PROGICIEL LIBRE. Le progiciel libre est fourni au Client sous licence selon 
+les conditions de licence propres au progiciel libre qui s'appliquent, 
+lesquelles sont disponibles dans le fichier open source_licenses.txt 
+accompagnant les Offres, dans la Documentation ou sur la page 
+www.vmware.com/fr/download/open_source.html. Ces conditions de licence 
+sont cohérentes avec la licence accordée dans le Contrat et peuvent accorder 
+des droits supplémentaires au bénéfice du Client. Les conditions de la licence 
+libre prévalent sur le Contrat dans la limite où celui-ci impose au Client des 
+restrictions plus importantes que les conditions applicables de la licence libre 
+applicable. Dans la mesure où la licence d'un progiciel libre, quel qu'il 
+soit, oblige VMware à donner accès au code source correspondant et/ou 
+aux éventuelles modifications (les « Fichiers sources ») au Client, le Client 
+peut se procurer une copie des Fichiers sources applicables sur la page 
+www.vmware.com/fr/download/open_source.html ou en envoyant une demande 
+écrite accompagnée de son nom et de son adresse à : VMware, Inc., 3401 
+Hillview Avenue, Palo Alto, CA 94304, États-Unis d'Amérique. Toutes les 
+demandes doivent clairement spécifier : Open Source Files Request, à 
+l'attention du : General Counsel. Cette possibilité d'obtention d'une copie 
+des Fichiers sources est valable pendant trois ans à partir de la date 
+d'acquisition de l'Offre par le Client.
+11. DIVERS.
+11.1. Transfert et attribution. Le Client ne peut pas attribuer le Contrat ou 
+toute Commande sans le consentement de VMware. Une fois attribué de façon 
+valide, le présent Contrat constituera un engagement et profitera aux parties 
+et à leurs successeurs et personnes désignées respectifs. 
+11.2. Avis. Tous les avis doivent se faire par écrit.  Les Avis adressés au 
+Client se feront : (a) par e-mail envoyé à l'adresse électronique associée 
+au compte du Client, si ce dernier s'est inscrit aux avis par e-mail ; ou (b) 
+par publication sur le portail du service client VMware. Les avis de nature 
+juridique seront adressés à VMware, Inc., 3401 Hillview Avenue, Palo Alto, 
+Californie 94304, États-Unis d'Amérique, À l'attention du Service juridique.
+11.3. Renonciation. La renonciation à invoquer une violation du Contrat ne 
+constituera pas une renonciation à invoquer une violation ultérieure, quelle 
+qu'elle soit.
+11.4. Divisibilité. Si une partie quelle du présent Contrat est déclarée non 
+valide ou inapplicable, toutes les dispositions restantes demeureront en vigueur 
+dans la mesure du possible pour respecter l'intention des parties.
+11.5. Assurance. VMware contractera une assurance pour la durée du Contrat. 
+Le Protocole d'assurance de VMware peut être consulté sur la page 
+www.vmware.com/agreements.
+11.6. Respect des lois. Chaque partie doit se conformer à toutes les lois 
+applicables.
+11.7. Contrôle des exportations. Les Offres sont soumises aux réglementations 
+de l'administration des exportations des États-Unis (y compris les 
+réglementations relatives aux « exportations supposées » et aux 
+« réexportations supposées »), et peuvent être soumises aux lois de contrôle 
+des exportations d'autres pays. Le Client reconnaît et garantit ce qui suit : 
+(a) le Client et tout Utilisateur ne sont pas des, et n'agissent pas pour le 
+compte de : (1) personnes qui sont des citoyens, ressortissants ou résidents, 
+ou qui sont contrôlées par le gouvernement, d'un pays vers lequel les 
+États-Unis ont interdit les exportations ; ou (2) une personne ou entité 
+répertoriée sur la liste des nationaux spécialement désignés et des 
+personnes bloquées (Specially Designated Nationals and Blocked Persons) 
+du Département du trésor américain ou sur la Liste des personnes ou liste 
+des entités refusées (Denied Persons List or Entity List) du Département du 
+commerce américain, ou sur toute autre liste semblable de personnes 
+désignées applicable ; (b) le Client, ou tout autre Utilisateur, ne permettra 
+pas que les Offres soient utilisées à des fins interdites par la loi, notamment 
+pour la conception, la fabrication, la production ou le développement interdits 
+de missiles ou d'armes nucléaires, chimiques ou biologiques ; et (c) le Client, 
+et tout autre Utilisateur, ne fait pas l'objet, directement ou indirectement, 
+d'une ordonnance émise par une agence, quelle qu'elle soit, du gouvernement 
+des États-Unis révoquant, ou réfutant, en tout ou en partie, les privilèges 
+d'exportation des États-Unis du Client. Le Client doit rapidement prévenir 
+VMware si lui-même ou tout autre Utilisateur fait l'objet d'une telle 
+ordonnance. 
+11.8. Droit applicable. Le Contrat est régi par les lois de l'État de 
+Californie et par les lois fédérales américaines, si l'adresse de facturation 
+de la Commande du Client est aux États-Unis, et par les lois de l'Irlande 
+si l'adresse de facturation de la Commande du Client se trouve hors des 
+États-Unis. Les règles relatives aux conflits de lois sont expressément 
+rejetées. La Convention des Nations Unies sur les contrats de vente 
+internationale de marchandises ne s'applique pas.
+11.9. Utilisateur final du secteur public américain. Si un Client est un 
+Utilisateur final du secteur public américain, l'Annexe sur le secteur public 
+américain disponible sur la page www.vmware.com/agreements abroge ou 
+modifie les dispositions citées dans le Contrat.
+11.10. Droits des tiers. Sauf comme expressément énoncé, le Contrat ne crée 
+aucun droit pour une personne, quelle qu'elle soit, qui n'y est pas partie. 
+Seules les personnes qui sont parties au Contrat peuvent le faire appliquer ou 
+en invoquer des conditions.
+11.11. Force majeure. Sauf en ce qui concerne les obligations de paiement du 
+Client, aucune partie ne sera responsable de tout retard ou défaut d'exécution 
+découlant d'une cause, quelle qu'elle soit, échappant au contrôle raisonnable 
+de la partie, y compris les conflits du travail, troubles industriels, 
+dysfonctionnements systémiques des services publics, phénomènes naturels, 
+pandémies, embargos, émeutes, ordonnances gouvernementales, actes de 
+terrorisme ou guerres.
+11.12. Aucune agence. Rien dans le Contrat n'est destiné à constituer une 
+relation fiduciaire, une agence, une coentreprise, un partenariat ou une fiducie 
+entre les parties. Aucune partie n'est habilitée à lier l'autre partie. 
+11.13. Traduction. Cette version des Conditions Générales dans une langue 
+autre que l'anglais est fournie à titre gracieux et l'utilisation de nos Offres 
+par le Client est soumise à la version en langue anglaise de ces Conditions 
+Générales publiées sur la page www.vmware.com/agreements.
+11.14. Exemplaires. Le Contrat peut être signé par voie électronique ou en 
+plusieurs exemplaires, auquel cas chaque copie signée sera considérée 
+comme un original comme si les deux signatures figuraient sur le même document.
+11.15. Intégralité du contrat. Le contrat contient l'intégralité de 
+l'accord entre les parties et abroge l'ensemble des communications, 
+déclarations, propositions, engagements, ententes et contrats précédents 
+ou contemporains, qu'ils soient écrits ou oraux, entre les parties à propos 
+de ce sujet. Le Contrat peut uniquement être modifié par écrit et en étant 
+signé par les deux parties.
+12. DÉFINITIONS
+Le terme « Affilié » désigne une entité qui est directement ou indirectement 
+contrôlée par la partie concernée, est placée sous un contrôle commun avec 
+celle-ci ou la « contrôle », le terme « contrôle » désignant un droit de 
+propriété, un droit de vote ou une participation semblable représentant 
+plus de 50 % du capital en circulation total de l'entité concernée à ce 
+moment-là.
+L'expression Service Cloud désigne le Service Cloud VMware défini dans 
+la Commande du Client.
+L'expression Guide des Services Cloud désigne le Guide des Services Cloud 
+VMware alors en vigueur, disponible sur la page www.vmware.com/agreements.
+L'expression Informations Confidentielles désigne les informations ou supports 
+fournis par une partie (« Divulgateur ») à l'autre partie (« Destinataire ») 
+qui : (a) ont une forme tangible et portent une mention « confidentiel » ou 
+autre mention semblable ; ou (b) sont des informations qu'une personne 
+raisonnable saurait reconnaître, ou devrait reconnaître, comme étant 
+confidentielles. Les Informations confidentielles incluent : (1) les clés de 
+licence ; (2) les tarifs, stratégies produits ou programmes marketing 
+stratégiques de VMware ; (3) les supports non publics concernant les Offres ; 
+et (4) les Identifiants de connexion du Client.
+Le terme Client désigne l'entité identifiée sur la Commande comme étant le 
+« Client ».
+L'expression Contenu du Client désigne le contenu chargé dans le Service 
+Cloud par le Client ou par n'importe quel utilisateur ou fourni à VMware 
+dans le cadre des Services de Support, mais sans inclure les Contenus tiers 
+ou les informations de compte. Pour les besoins de cette définition, « contenu » 
+signifie n'importe quelles données, y compris les fichiers texte, vidéo ou 
+image et les logiciels (y compris les images de machine).
+L'expression Avenant sur le traitement des données désigne l'Avenant sur 
+le traitement des données alors en vigueur, disponible sur la page 
+www.vmware.com/agreements.
+L'expression Produits livrables désigne tous les rapports, analyses, scripts, 
+modèles, codes ou autres résultats de travaux fournis par VMware comme cela est 
+spécifié dans l'Énoncé des travaux applicables aux Services professionnels.
+Le terme Livraison désigne ce qui suit : (a) pour les Services Cloud, le moment 
+où VMware envoie par e-mail les Identifiants de connexion à l'adresse 
+électronique associée au compte du Client ; (b) pour le Progiciel, le moment 
+où VMware informe le Client que le Progiciel est disponible pour le 
+téléchargement ; (c) pour les Services de support, l'émission par VMware 
+d'une facture pour ces Services de support ; (d) pour les Services 
+professionnels, comme indiqué dans l'Énoncé des travaux applicable ; 
+(e) pour l'achat de crédits de programme, le moment où VMware rend le solde 
+des fonds disponible sur le portail concerné ; et (f) pour l'expédition et la 
+livraison d'objets matériels, l'installation logistique régionale de départ 
+usine de VMware (INCOTERMS 2020(TM)).
+Le terme Documentation désigne la documentation du produit décrivant les 
+fonctionnalités, le fonctionnement et l'utilisation des Offres publiées et 
+mises à jour par VMware de temps à autre sur docs.vmware.com.
+Le terme Évaluation désigne une Offre (ou une partie d'une Offre) mise à 
+disposition gratuitement, à des fins d'évaluation, d'essai, de preuve de 
+concept ou à une autre fin semblable. 
+Le terme Annexes désigne les annexes des présentes Conditions Générales 
+(Progiciel, Services Cloud, Services professionnels, Entités du gouvernement 
+fédéral américain et de VMware) disponibles sur la page 
+www.vmware.com/agreements.
+L'expression Supports Indemnisés désigne les Services Cloud, le Progiciel 
+et les Livrables.
+L'expression Action en Contrefaçon désigne toute affirmation d'un tiers 
+selon laquelle les Supports Indemnisés enfreignent un brevet, une marque de 
+commerce ou un droit d'auteur dudit tiers, ou selon laquelle ils détournent 
+frauduleusement un secret commercial (mais uniquement dans la mesure où le 
+détournement ne résulte pas des actions du Client).
+L'expression Droits de Propriété Intellectuelle désigne tous les droits de 
+propriété intellectuelle dans le monde entier, y compris les droits d'auteur, 
+marques commerciales, marques de service, secrets industriels, savoir-faire, 
+inventions, brevets, demandes de brevets, droits moraux et tous les autres 
+droits de propriété, qu'ils soient enregistrés ou non.
+L'expression Identifiants de connexion désigne tous les mots de passe, clés 
+d'authentification ou identifiants de sécurité qui permettent au Client 
+d'accéder au Service Cloud et de le gérer.
+Le terme Offre(s) désigne, collectivement, les Services ou le Progiciel.
+L'expression Avis relatifs aux Offres désigne les avis de licence ou avis de 
+service applicables situés dans le Guide des Produits, le Guide des 
+Services Cloud et le Guide des Services de Support.
+Le terme Commande désigne une commande d'entreprise, un Énoncé des Travaux, 
+un devis ou un autre document de commande pour les Offres, adressé par le 
+Client à VMware ou au revendeur agréé VMware du Client et accepté par 
+VMware, décrit dans l'article 2 des Conditions Générales (Commandes et 
+Paiements). L'expression Licence perpétuelle désigne une licence pour le 
+Progiciel ayant une durée perpétuelle.
+La définition de Données Personnelles est fournie dans l'Avenant sur le 
+traitement des données. 
+L'expression Guide des Produits désigne le Guide des Produits de VMware 
+alors en vigueur disponible sur la page www.vmware.com/agreements.
+L'expression Services Professionnels désigne les services décrits dans 
+l'Énoncé des Travaux applicable. 
+L'expression Contrat de Niveau de Service désigne la version alors en vigueur 
+du Contrat de Niveau de Service d'un Service Cloud, disponible sur la page 
+www.vmware.com/agreements. 
+Le terme Service(s) désigne les Services Cloud, Services de Support ou Services 
+Professionnels.
+Le terme Progiciel désigne les programmes informatiques de VMware pour 
+lesquels le Client obtient une licence, ainsi que tout code logiciel associé 
+fourni par VMware dans le cadre des Services de Support et qui ne donne 
+pas lieu à un contrat de licence distinct.
+L'expression Énoncé des Travaux ou Statement of Work désigne un contrat 
+écrit entre le Client et VMware contenant des détails spécifiques au projet 
+de Services Professionnels ou une fiche produit en ligne de VMware.
+L'expression Progiciel par abonnement désigne un Progiciel qui est fourni 
+sous licence pour une durée spécifique. 
+L'expression Durée d'abonnement désigne la période de temps pendant 
+laquelle le Client est autorisé à utiliser le Service Cloud ou le Progiciel par 
+abonnement, définie dans la Commande applicable. Pour tout Service Cloud 
+à la demande, la Durée d'abonnement correspond à la période de temps pendant 
+laquelle le Client utilise le Service Cloud.
+L'expression Services de Support désigne les services de support et par 
+abonnement de VMware qui sont achetés dans le cadre d'une Commande ou inclus 
+dans l'achat d'un Progiciel par abonnement ou de Services Cloud.
+L'expression Guide des Services de Support désigne le Guide des Services de 
+Support VMware alors en vigueur, disponible sur la page www.vmware.com/agreements.
+Le terme Taxe désigne l'ensemble des taxes sur les ventes, TVA (taxe sur la 
+valeur ajoutée), taxe sur les biens et services, sur l'utilisation, sur des 
+reçus bruts, sur les entreprises et l'activité et autres taxes (autres que les 
+taxes sur le revenu de VMware), frais d'exportation et importation, droits de 
+douane et frais assimilés imposés par un gouvernement ou une autre autorité. 
+L'expression Prestataire tiers désigne un tiers fournissant des services 
+informatiques au Client en vertu d'un contrat conclu avec ce dernier.
+L'expression Contenu Tiers désigne le contenu fourni par un tiers qui interagit 
+avec un Service Cloud, mais qui ne fait pas partie du Cloud Service. Le 
+Contenu Tiers est facultatif et soumis aux conditions tierces qui 
+accompagnent le Contenu Tiers.
+L'expression Utilisateur final du secteur public américain désigne un 
+Utilisateur final fédéral américain ou un Utilisateur final du gouvernement 
+local ou d'un État des États-Unis comme ces termes sont définis dans 
+l'Annexe sur le secteur public américain.
+Le terme Utilisateur désigne un employé, sous-traitant ou Prestataire 
+tiers autorisé par le Client à utiliser les Offres comme cela est autorisé en 
+vertu du Contrat ou à l'aide des Identifiants de connexion du Client.
+VMware désigne VMware, Inc., une société du Delaware, si l'adresse de 
+facturation de la commande se trouve aux États-Unis d'Amérique, ou 
+VMware International Unlimited Company, une entreprise constituée et 
+existant sous le régime des lois de l'Irlande, si l'adresse de facturation de 
+la Commande se situe en dehors des États-Unis d'Amérique, sauf si l'adresse 
+de facturation de la Commande se trouve au Royaume-Uni, en Australie, en 
+Nouvelle-Zélande ou dans les îles du Pacifique, auquel cas VMware désigne 
+l'entité applicable identifiée dans l'Annexe relative aux entités VMware 
+disponible sur la page www.vmware.com/agreements.

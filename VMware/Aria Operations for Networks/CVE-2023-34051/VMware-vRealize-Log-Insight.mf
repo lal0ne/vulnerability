@@ -1,0 +1,60 @@
+{
+    "CHECKSUMS": [
+        {
+            "CHECKSUM": "407791f5831c4f5321cda36ff2e3b63da2819354", 
+            "FILE_NAME": "eula.txt"
+        }, 
+        {
+            "CHECKSUM": "8ab2c0a6d01a36d0daad230dbcb229f1b87154e6", 
+            "FILE_NAME": "cn_eula.txt"
+        }, 
+        {
+            "CHECKSUM": "8ca69bdc2ddda5228e893c4843d9f4afc0790247", 
+            "FILE_NAME": "de_eula.txt"
+        }, 
+        {
+            "CHECKSUM": "4278004a1f2a7a3f2d9310983679868ebe19e088", 
+            "FILE_NAME": "es_eula.txt"
+        }, 
+        {
+            "CHECKSUM": "95280fd7033b59094703a29cc5d6ff803c5725af", 
+            "FILE_NAME": "fr_eula.txt"
+        }, 
+        {
+            "CHECKSUM": "f8ee67f279b7f56c953daa737bbbaad3f0cb719d", 
+            "FILE_NAME": "ja_eula.txt"
+        }, 
+        {
+            "CHECKSUM": "aaa14f774fc9fe487ae8fea59adfca532928f4a2", 
+            "FILE_NAME": "ko_eula.txt"
+        }, 
+        {
+            "CHECKSUM": "d7003b652dd28d28af310c652e2a164acaf17580", 
+            "FILE_NAME": "tw_eula.txt"
+        }, 
+        {
+            "CHECKSUM": "b0034c7f14876be3b6a85bde0322c83b78027d70", 
+            "FILE_NAME": "upgrade-driver"
+        }, 
+        {
+            "CHECKSUM": "b906d570101d29646966435d2bed8479f4437216", 
+            "FILE_NAME": "upgrade-image-8.10.2-21145187.rpm"
+        }
+    ], 
+    "FROM_VERSION": "8.8.0-0", 
+    "REQUIRED_SPACE": "1073741824", 
+    "RPM_INFO": {
+        "KEY_LIST": [], 
+        "REBOOT": "False", 
+        "RPM_LIST": [
+            {
+                "ARGUMENTS": [
+                    "--nodeps"
+                ], 
+                "FILE_NAME": "upgrade-image-8.10.2-21145187.rpm", 
+                "OPTION": "INSTALL_OR_UPGRADE"
+            }
+        ]
+    }, 
+    "TO_VERSION": "8.10.2-21145187"
+}
