@@ -1,0 +1,3 @@
+![brick wall with a hole in it](image.png)
+
+(because every vulnerability needs a logo. Credits to MS Paint)
