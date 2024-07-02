@@ -1,0 +1,1199 @@
+Qualys Security Advisory
+
+regreSSHion: RCE in OpenSSH's server, on glibc-based Linux systems
+(CVE-2024-6387)
+
+
+========================================================================
+Contents
+========================================================================
+
+Summary
+SSH-2.0-OpenSSH_3.4p1 Debian 1:3.4p1-1.woody.3 (Debian 3.0r6, from 2005)
+- Theory
+- Practice
+- Timing
+SSH-2.0-OpenSSH_4.2p1 Debian-7ubuntu3 (Ubuntu 6.06.1, from 2006)
+- Theory, take one
+- Theory, take two
+- Practice
+- Timing
+SSH-2.0-OpenSSH_9.2p1 Debian-2+deb12u2 (Debian 12.5.0, from 2024)
+- Theory
+- Practice
+- Timing
+Towards an amd64 exploit
+Patches and mitigation
+Acknowledgments
+Timeline
+
+
+========================================================================
+Summary
+========================================================================
+
+    All it takes is a leap of faith
+        -- The Interrupters, "Leap of Faith"
+
+Preliminary note: OpenSSH is one of the most secure software in the
+world; this vulnerability is one slip-up in an otherwise near-flawless
+implementation. Its defense-in-depth design and code are a model and an
+inspiration, and we thank OpenSSH's developers for their exemplary work.
+
+We discovered a vulnerability (a signal handler race condition) in
+OpenSSH's server (sshd): if a client does not authenticate within
+LoginGraceTime seconds (120 by default, 600 in old OpenSSH versions),
+then sshd's SIGALRM handler is called asynchronously, but this signal
+handler calls various functions that are not async-signal-safe (for
+example, syslog()). This race condition affects sshd in its default
+configuration.
+
+On investigation, we realized that this vulnerability is in fact a
+regression of CVE-2006-5051 ("Signal handler race condition in OpenSSH
+before 4.4 allows remote attackers to cause a denial of service (crash),
+and possibly execute arbitrary code"), which was reported in 2006 by
+Mark Dowd.
+
+This regression was introduced in October 2020 (OpenSSH 8.5p1) by commit
+752250c ("revised log infrastructure for OpenSSH"), which accidentally
+removed an "#ifdef DO_LOG_SAFE_IN_SIGHAND" from sigdie(), a function
+that is directly called by sshd's SIGALRM handler. In other words:
+
+- OpenSSH < 4.4p1 is vulnerable to this signal handler race condition,
+  if not backport-patched against CVE-2006-5051, or not patched against
+  CVE-2008-4109, which was an incorrect fix for CVE-2006-5051;
+
+- 4.4p1 <= OpenSSH < 8.5p1 is not vulnerable to this signal handler race
+  condition (because the "#ifdef DO_LOG_SAFE_IN_SIGHAND" that was added
+  to sigdie() by the patch for CVE-2006-5051 transformed this unsafe
+  function into a safe _exit(1) call);
+
+- 8.5p1 <= OpenSSH < 9.8p1 is vulnerable again to this signal handler
+  race condition (because the "#ifdef DO_LOG_SAFE_IN_SIGHAND" was
+  accidentally removed from sigdie()).
+
+This vulnerability is exploitable remotely on glibc-based Linux systems,
+where syslog() itself calls async-signal-unsafe functions (for example,
+malloc() and free()): an unauthenticated remote code execution as root,
+because it affects sshd's privileged code, which is not sandboxed and
+runs with full privileges. We have not investigated any other libc or
+operating system; but OpenBSD is notably not vulnerable, because its
+SIGALRM handler calls syslog_r(), an async-signal-safer version of
+syslog() that was invented by OpenBSD in 2001.
+
+To exploit this vulnerability remotely (to the best of our knowledge,
+CVE-2006-5051 has never been successfully exploited before), we drew
+inspiration from a visionary paper, "Delivering Signals for Fun and
+Profit", which was published in 2001 by Michal Zalewski:
+
+  https://lcamtuf.coredump.cx/signals.txt
+
+Nevertheless, we immediately faced three major problems:
+
+- From a theoretical point of view, we must find a useful code path
+  that, if interrupted at the right time by SIGALRM, leaves sshd in an
+  inconsistent state, and we must then exploit this inconsistent state
+  inside the SIGALRM handler.
+
+- From a practical point of view, we must find a way to reach this
+  useful code path in sshd, and maximize our chances of interrupting it
+  at the right time.
+
+- From a timing point of view, we must find a way to further increase
+  our chances of interrupting this useful code path at the right time,
+  remotely.
+
+To focus on these three problems without having to immediately fight
+against all the modern operating system protections (in particular, ASLR
+and NX), we decided to exploit old OpenSSH versions first, on i386, and
+then, based on this experience, recent versions:
+
+- First, "SSH-2.0-OpenSSH_3.4p1 Debian 1:3.4p1-1.woody.3", from
+  "debian-30r6-dvd-i386-binary-1_NONUS.iso": this is the first Debian
+  version that has privilege separation enabled by default and that is
+  patched against all the critical vulnerabilities of that era (in
+  particular, CVE-2003-0693 and CVE-2002-0640).
+
+  To remotely exploit this version, we interrupt a call to free() with
+  SIGALRM (inside sshd's public-key parsing code), leave the heap in an
+  inconsistent state, and exploit this inconsistent state during another
+  call to free(), inside the SIGALRM handler.
+
+  In our experiments, it takes ~10,000 tries on average to win this race
+  condition; i.e., with 10 connections (MaxStartups) accepted per 600
+  seconds (LoginGraceTime), it takes ~1 week on average to obtain a
+  remote root shell.
+
+- Second, "SSH-2.0-OpenSSH_4.2p1 Debian-7ubuntu3", from
+  "ubuntu-6.06.1-server-i386.iso": this is the last Ubuntu version that
+  is still vulnerable to CVE-2006-5051 ("Signal handler race condition
+  in OpenSSH before 4.4").
+
+  To remotely exploit this version, we interrupt a call to pam_start()
+  with SIGALRM, leave one of PAM's structures in an inconsistent state,
+  and exploit this inconsistent state during a call to pam_end(), inside
+  the SIGALRM handler.
+
+  In our experiments, it takes ~10,000 tries on average to win this race
+  condition; i.e., with 10 connections (MaxStartups) accepted per 120
+  seconds (LoginGraceTime), it takes ~1-2 days on average to obtain a
+  remote root shell.
+
+- Finally, "SSH-2.0-OpenSSH_9.2p1 Debian-2+deb12u2", from
+  "debian-12.5.0-i386-DVD-1.iso": this is the current Debian stable
+  version, and it is vulnerable to the regression of CVE-2006-5051.
+
+  To remotely exploit this version, we interrupt a call to malloc() with
+  SIGALRM (inside sshd's public-key parsing code), leave the heap in an
+  inconsistent state, and exploit this inconsistent state during another
+  call to malloc(), inside the SIGALRM handler (more precisely, inside
+  syslog()).
+
+  In our experiments, it takes ~10,000 tries on average to win this race
+  condition, so ~3-4 hours with 100 connections (MaxStartups) accepted
+  per 120 seconds (LoginGraceTime). Ultimately, it takes ~6-8 hours on
+  average to obtain a remote root shell, because we can only guess the
+  glibc's address correctly half of the time (because of ASLR).
+
+This research is still a work in progress:
+
+- we have targeted virtual machines only, not bare-metal servers, on a
+  mostly stable network link (~10ms packet jitter);
+
+- we are convinced that various aspects of our exploits can be greatly
+  improved;
+
+- we have started to work on an amd64 exploit, which is much harder
+  because of the stronger ASLR.
+
+A few days after we started our work on amd64, we noticed the following
+bug report (in OpenSSH's public Bugzilla), about a deadlock in sshd's
+SIGALRM handler:
+
+  https://bugzilla.mindrot.org/show_bug.cgi?id=3690
+
+We therefore decided to contact OpenSSH's developers immediately (to let
+them know that this deadlock is caused by an exploitable vulnerability),
+we put our amd64 work on hold, and we started to write this advisory.
+
+
+========================================================================
+SSH-2.0-OpenSSH_3.4p1 Debian 1:3.4p1-1.woody.3 (Debian 3.0r6, from 2005)
+========================================================================
+
+------------------------------------------------------------------------
+Theory
+------------------------------------------------------------------------
+
+    But that's not like me, I'm breaking free
+        -- The Interrupters, "Haven't Seen the Last of Me"
+
+The SIGALRM handler of this OpenSSH version calls packet_close(), which
+calls buffer_free(), which calls xfree() and hence free(), which is not
+async-signal-safe:
+
+------------------------------------------------------------------------
+ 302 grace_alarm_handler(int sig)
+ 303 {
+ ...
+ 307         packet_close();
+------------------------------------------------------------------------
+ 329 packet_close(void)
+ 330 {
+ ...
+ 341         buffer_free(&input);
+ 342         buffer_free(&output);
+ 343         buffer_free(&outgoing_packet);
+ 344         buffer_free(&incoming_packet);
+------------------------------------------------------------------------
+ 35 buffer_free(Buffer *buffer)
+ 36 {
+ 37         memset(buffer->buf, 0, buffer->alloc);
+ 38         xfree(buffer->buf);
+ 39 }
+------------------------------------------------------------------------
+ 51 xfree(void *ptr)
+ 52 {
+ 53         if (ptr == NULL)
+ 54                 fatal("xfree: NULL pointer given as argument");
+ 55         free(ptr);
+ 56 }
+------------------------------------------------------------------------
+
+Consequently, we started to read the malloc code of this Debian's glibc
+(2.2.5), to see if a first call to free() can be interrupted by SIGALRM
+and exploited during a second call to free() inside the SIGALRM handler
+(at lines 341-344, above). Because this glibc's malloc is not hardened
+against the unlink() technique pioneered by Solar Designer in 2000, we
+quickly spotted an interesting code path in chunk_free() (which is
+called internally by free()):
+
+------------------------------------------------------------------------
+1028 struct malloc_chunk
+1029 {
+1030   INTERNAL_SIZE_T prev_size; /* Size of previous chunk (if free). */
+1031   INTERNAL_SIZE_T size;      /* Size in bytes, including overhead. */
+1032   struct malloc_chunk* fd;   /* double links -- used only if free. */
+1033   struct malloc_chunk* bk;
+1034 };
+------------------------------------------------------------------------
+2516 #define unlink(P, BK, FD)                                           \
+2517 {                                                                   \
+2518   BK = P->bk;                                                       \
+2519   FD = P->fd;                                                       \
+2520   FD->bk = BK;                                                      \
+2521   BK->fd = FD;                                                      \
+2522 }                                                                   \
+------------------------------------------------------------------------
+3160 chunk_free(arena *ar_ptr, mchunkptr p)
+....
+3164 {
+3165   INTERNAL_SIZE_T hd = p->size; /* its head field */
+....
+3177   sz = hd & ~PREV_INUSE;
+3178   next = chunk_at_offset(p, sz);
+3179   nextsz = chunksize(next);
+....
+3230   if (!(inuse_bit_at_offset(next, nextsz)))   /* consolidate forward */
+3231   {
+....
+3241       unlink(next, bck, fwd);
+....
+3244   }
+3245   else
+3246     set_head(next, nextsz);                  /* clear inuse bit */
+....
+3251     frontlink(ar_ptr, p, sz, idx, bck, fwd);
+------------------------------------------------------------------------
+
+To exploit this code path, we arrange for sshd's heap to have the
+following layout (chunk_X, chunk_Y, and chunk_Z are malloc()ated chunks
+of memory, and p, s, f, b are their prev_size, size, fd, and bk fields):
+
+-----|---+---------------|---+---------------|---+---------------|-----
+ ... |p|s|f|b|  chunk_X  |p|s|f|b|  chunk_Y  |p|s|f|b|  chunk_Z  | ...
+-----|---+---------------|---+---------------|---+---------------|-----
+                             |<------------->|
+                                 user data
+
+- First, if a call to free(chunk_Y) is interrupted by SIGALRM *after*
+  line 3246 but *before* line 3251, then chunk_Y is already marked as
+  free (because chunk_Z's PREV_INUSE bit is cleared at line 3246) but it
+  is not yet linked into its doubly-linked list (at line 3251): in other
+  words, chunk_Y's fd and bk pointers still contain user data (attacker-
+  controlled data).
+
+- Second, if (inside the SIGALRM handler) packet_close() calls
+  free(chunk_X), then the code block at lines 3230-3244 is entered
+  (because chunk_Y is marked as free) and chunk_Y is unlink()ed (at line
+  3241): a so-called aa4bmo primitive (almost arbitrary 4 bytes mirrored
+  overwrite), because chunk_Y's fd and bk pointers are still attacker-
+  controlled. For more information on the unlink() technique and the
+  aa4bmo primitive:
+
+  https://www.openwall.com/articles/JPEG-COM-Marker-Vulnerability#exploit
+  http://phrack.org/issues/61/6.html#article
+
+- Last, with this aa4bmo primitive we overwrite the glibc's __free_hook
+  function pointer (this old Debian version does not have ASLR, nor NX)
+  with the address of our shellcode in the heap, thus achieving remote
+  code execution during the next call to free() in packet_close().
+
+------------------------------------------------------------------------
+Practice
+------------------------------------------------------------------------
+
+    Now they're taking over and they got complete control
+        -- The Interrupters, "Liberty"
+
+To mount this attack against sshd, we interrupt a call to free() inside
+sshd's parsing code of a DSA public key (i.e., line 144 below is our
+free(chunk_Y)) and exploit it during one of the free() calls in
+packet_close() (i.e., one of the lines 341-344 above is our
+free(chunk_X)):
+
+------------------------------------------------------------------------
+136 buffer_get_bignum2(Buffer *buffer, BIGNUM *value)
+137 {
+138         u_int len;
+139         u_char *bin = buffer_get_string(buffer, &len);
+...
+143         BN_bin2bn(bin, len, value);
+144         xfree(bin);
+145 }
+------------------------------------------------------------------------
+
+Initially, however, we were never able to win this race condition (i.e.,
+interrupt the free() call at line 144 at the right time). Eventually, we
+realized that we could greatly improve our chances of winning this race:
+the DSA public-key parsing code allows us to call free() four times (at
+lines 704-707 below), and furthermore sshd allows us to attempt six user
+authentications (AUTH_FAIL_MAX); if any one of these 24 free() calls is
+interrupted at the right time, then we later achieve remote code
+execution inside the SIGALRM handler.
+
+------------------------------------------------------------------------
+678 key_from_blob(u_char *blob, int blen)
+679 {
+...
+693         switch (type) {
+...
+702         case KEY_DSA:
+703                 key = key_new(type);
+704                 buffer_get_bignum2(&b, key->dsa->p);
+705                 buffer_get_bignum2(&b, key->dsa->q);
+706                 buffer_get_bignum2(&b, key->dsa->g);
+707                 buffer_get_bignum2(&b, key->dsa->pub_key);
+------------------------------------------------------------------------
+
+With this improvement, we finally won the race condition after ~1 month:
+we were happy (and did a root-shell dance), but we also felt that there
+was still room for improvement.
+
+------------------------------------------------------------------------
+Timing
+------------------------------------------------------------------------
+
+    Don't worry, just wait and see
+        -- The Interrupters, "Haven't Seen the Last of Me"
+
+We therefore implemented the following threefold timing strategy:
+
+- We do not wait until the last moment to send our (rather large) DSA
+  public-key packet to sshd: instead, we send the entire packet minus
+  one byte (the last byte) long before the LoginGraceTime, and send the
+  very last byte at the very last moment, to minimize the effects of
+  network delays. (And we disable the Nagle algorithm.)
+
+- We keep track of the median round-trip time (by regularly sending
+  packets that produce a response from sshd), and keep track of the
+  difference between the moment we are expecting our connection to be
+  closed by sshd (essentially the moment we receive the first byte of
+  sshd's banner, plus LoginGraceTime) and the moment our connection is
+  really closed by sshd, and accordingly adjust our timing (i.e., the
+  moment when we send the last byte of our DSA packet).
+
+  These time differences allow us to track clock skews and network
+  delays, which show predictable patterns over time: we experimented
+  with linear and spline regressions, but in the end, nothing worked
+  better than simply re-using the most recent measurement. Possibly,
+  deep learning might yield even better results; this is left as an
+  exercise for the interested reader.
+
+- More importantly, we further increase our chances of winning this race
+  condition by slowly adjusting our timing through involuntary feedback
+  from sshd:
+
+  - if we receive a response (SSH2_MSG_USERAUTH_FAILURE) to our DSA
+    public-key packet, then we sent it too early (sshd had the time to
+    receive our packet in the unprivileged child, parse it, send it to
+    the privileged child, parse it there, and send a response all the
+    way back to us);
+
+  - if we cannot even send the last byte of our DSA packet, then we
+    waited too long (sshd already received the SIGALRM and closed our
+    connection);
+
+  - if we can send the last byte of our DSA packet, and receive no
+    response before sshd closes our connection, then our timing was
+    reasonably accurate.
+
+  This feedback allows us to target what we call the "large" race
+  window: hitting it does not guarantee that we win the race condition,
+  but inside this large window are the 24 "small" race windows (inside
+  the 24 free() calls) that, if hit, guarantee that we do win the race
+  condition.
+
+With these improvements, it takes ~10,000 tries on average to win this
+race condition; i.e., with 10 connections (MaxStartups) accepted per 600
+seconds (LoginGraceTime), it takes ~1 week on average to obtain a remote
+root shell.
+
+
+========================================================================
+SSH-2.0-OpenSSH_4.2p1 Debian-7ubuntu3 (Ubuntu 6.06.1, from 2006)
+========================================================================
+
+------------------------------------------------------------------------
+Theory, take one
+------------------------------------------------------------------------
+
+    I sleep when the sun starts to rise
+        -- The Interrupters, "Alien"
+
+The SIGALRM handler of this OpenSSH version does not call packet_close()
+anymore; moreover, this Ubuntu's glibc (2.3.6) always takes a mandatory
+lock when entering the functions of the malloc family (even if single-
+threaded like sshd), which prevents us from interrupting a call to one
+of the malloc functions and later exploiting it during another call to
+these functions (they would always deadlock). We must find another
+solution.
+
+CVE-2006-5051 mentions a double-free in GSSAPI, but GSSAPI (or Kerberos)
+is not enabled by default, so this does not sound very appealing. On the
+other hand, PAM is enabled by default, and pam_end() is called by sshd's
+SIGALRM handler (and is, of course, not async-signal-safe). We therefore
+searched for a PAM function that, if interrupted by SIGALRM at the right
+time, would leave PAM's internal structures in an inconsistent state,
+exploitable during pam_end() in the SIGALRM handler. We found
+pam_set_data():
+
+------------------------------------------------------------------------
+ 33 int pam_set_data(
+ 34     pam_handle_t *pamh,
+ ..
+ 37     void (*cleanup)(pam_handle_t *pamh, void *data, int error_status))
+ 38 {
+ 39     struct pam_data *data_entry;
+ ..
+ 57     } else if ((data_entry = malloc(sizeof(*data_entry)))) {
+ ..
+ 65         data_entry->next = pamh->data;
+ 66         pamh->data = data_entry;
+ ..
+ 74     data_entry->cleanup = cleanup;
+------------------------------------------------------------------------
+
+If this function is interrupted by SIGALRM *after* line 66 but *before*
+line 74, then data_entry is already linked into PAM's structures (pamh),
+but its cleanup field (a function pointer) is not yet initialized (since
+the malloc() at line 57 does not initialize its memory). If we are able
+to control cleanup (through leftovers from previous heap allocations),
+then we can execute arbitrary code when pam_end() (inside the SIGALRM
+handler) calls _pam_free_data() (at line 118):
+
+------------------------------------------------------------------------
+104 void _pam_free_data(pam_handle_t *pamh, int status)
+105 {
+106     struct pam_data *last;
+107     struct pam_data *data;
+...
+112     data = pamh->data;
+113 
+114     while (data) {
+115         last = data;
+116         data = data->next;
+117         if (last->cleanup) {
+118             last->cleanup(pamh, last->data, status);
+------------------------------------------------------------------------
+
+This would have been an extremely simple exploit; unfortunately, we
+completely overlooked that pam_set_data() can only be called from PAM
+modules: if we interrupt it with SIGALRM, then pamh->caller_is is still
+_PAM_CALLED_FROM_MODULE, in which case pam_end() returns immediately,
+without ever calling _pam_free_data(). Back to the drawing board.
+
+------------------------------------------------------------------------
+Theory, take two
+------------------------------------------------------------------------
+
+    Not giving up, it's not what we do
+        -- The Interrupters, "Title Holder"
+
+We noticed that, at line 601 below, sshd passes a pointer to its global
+sshpam_handle pointer directly to pam_start() (which is called once per
+connection):
+
+------------------------------------------------------------------------
+ 202 static pam_handle_t *sshpam_handle = NULL;
+------------------------------------------------------------------------
+ 584 sshpam_init(Authctxt *authctxt)
+ 585 {
+ ...
+ 600         sshpam_err =
+ 601             pam_start(SSHD_PAM_SERVICE, user, &store_conv, &sshpam_handle);
+------------------------------------------------------------------------
+
+We therefore decided to look into pam_start() itself: if interrupted by
+SIGALRM, it might leave the structure pointed to by sshpam_handle in an
+inconsistent state, which could then be exploited inside the SIGALRM
+handler, when "pam_end(sshpam_handle, sshpam_err)" is called.
+
+------------------------------------------------------------------------
+ 18 int pam_start (
+ ..
+ 22     pam_handle_t **pamh)
+ 23 {
+ ..
+ 32     if ((*pamh = calloc(1, sizeof(**pamh))) == NULL) {
+...
+110     if ( _pam_init_handlers(*pamh) != PAM_SUCCESS ) {
+------------------------------------------------------------------------
+ 319 int _pam_init_handlers(pam_handle_t *pamh)
+ 320 {
+ ...
+ 398                 retval = _pam_parse_conf_file(pamh, f, pamh->service_name, PAM_T_ANY
+------------------------------------------------------------------------
+  66 static int _pam_parse_conf_file(pam_handle_t *pamh, FILE *f
+  ..
+  73 {
+ ...
+ 252             res = _pam_add_handler(pamh, must_fail, other
+------------------------------------------------------------------------
+ 581 int _pam_add_handler(pam_handle_t *pamh
+ ...
+ 585 {
+ ...
+ 755     the_handlers = (other) ? &pamh->handlers.other : &pamh->handlers.conf;
+ ...
+ 767         handler_p = &the_handlers->authenticate;
+ ...
+ 874     if ((*handler_p = malloc(sizeof(struct handler))) == NULL) {
+ ...
+ 886     (*handler_p)->next = NULL;
+------------------------------------------------------------------------
+
+At line 32, pam_start() immediately sets sshd's sshpam_handle to a
+calloc()ated chunk of memory; this is safe, because calloc() initializes
+this memory to zero. On the other hand, if _pam_add_handler() (which is
+called multiple times by pam_start()) is interrupted by SIGALRM *after*
+line 874 but *before* line 886, then a malloc()ated structure is linked
+into pamh, but its next field is not yet initialized. If we are able to
+control next (through leftovers from previous heap allocations), then we
+can pass an arbitrary pointer to free() during the call to pam_end()
+(inside the SIGALRM handler), at line 1020 (and line 1017) below:
+
+------------------------------------------------------------------------
+ 11 int pam_end(pam_handle_t *pamh, int pam_status)
+ 12 {
+ ..
+ 31     if ((ret = _pam_free_handlers(pamh)) != PAM_SUCCESS) {
+------------------------------------------------------------------------
+ 925 int _pam_free_handlers(pam_handle_t *pamh)
+ 926 {
+ ...
+ 954     _pam_free_handlers_aux(&(pamh->handlers.conf.authenticate));
+------------------------------------------------------------------------
+1009 void _pam_free_handlers_aux(struct handler **hp)
+1010 {
+1011     struct handler *h = *hp;
+1012     struct handler *last;
+....
+1015     while (h) {
+1016         last = h;
+1017         _pam_drop(h->argv);  /* This is all alocated in a single chunk */
+1018         h = h->next;
+1019         memset(last, 0, sizeof(*last));
+1020         free(last);
+1021     }
+------------------------------------------------------------------------
+
+Because the malloc of this Ubuntu's glibc is already hardened against
+the old unlink() technique, we decided to transform our arbitrary free()
+into the Malloc Maleficarum's House of Mind (fastbin version): we free()
+our own NON_MAIN_ARENA chunk, point our fake arena to sshd's .got.plt
+(this Ubuntu's sshd has ASLR but not PIE), and overwrite _exit()'s entry
+with the address of our shellcode in the heap (this Ubuntu's heap is
+still executable by default). For more information on the Malloc
+Maleficarum:
+
+  https://seclists.org/bugtraq/2005/Oct/118
+
+------------------------------------------------------------------------
+Practice
+------------------------------------------------------------------------
+
+    I learned everything the hard way
+        -- The Interrupters, "The Hard Way"
+
+To mount this attack against sshd, we initially faced three problems:
+
+- The House of Mind requires us to store the pointer to our fake arena
+  at address 0x08100000 in the heap; but are we able to store attacker-
+  controlled data at such a high address? Because sshd calls pam_start()
+  at the very beginning of the user authentication, we do not control
+  anything except the user name itself; luckily, a user name of length
+  ~128KB (shorter than DEFAULT_MMAP_THRESHOLD) allows us to store our
+  own data at address 0x08100000.
+
+- The size field of our fake NON_MAIN_ARENA chunk must not be too large
+  (to pass free()'s security checks); i.e., it must contain null bytes.
+  But our long user name is a null-terminated string that cannot contain
+  null bytes; luckily we remembered that _pam_free_handlers_aux() zeroes
+  the structures that it free()s (line 1019 above): we therefore "patch"
+  the size field of our fake chunk with such a memset(0), and only then
+  free() it.
+
+- We must survive several calls to free() (at lines 1017 and 1020 above)
+  before the free() of our fake NON_MAIN_ARENA chunk. We transform these
+  free()s into no-ops by pointing them to fake IS_MMAPPED chunks: free()
+  calls munmap_chunk(), which calls munmap(), which fails because these
+  fake IS_MMAPPED chunks are misaligned; effectively a no-op, because
+  assert()ion failures are not enforced in this Ubuntu's glibc.
+
+Finally, our long user name also allows us to control the potentially
+uninitialized next field of 20 different structures (through leftovers
+from temporary copies of our long user name), because pam_start() calls
+_pam_add_handler() multiple times; i.e., our large race window contains
+20 small race windows.
+
+------------------------------------------------------------------------
+Timing
+------------------------------------------------------------------------
+
+    Same tricks they used before
+        -- The Interrupters, "Divide Us"
+
+For this attack against Ubuntu 6.06.1, we simply re-used the timing
+strategy that we used against Debian 3.0r6: it takes ~10,000 tries on
+average to win the race condition, and with 10 connections (MaxStartups)
+accepted per 120 seconds (LoginGraceTime), it takes ~1-2 days on average
+to obtain a remote root shell.
+
+Note: because this Ubuntu's glibc always takes a mandatory lock when
+entering the functions of the malloc family, an unlucky attacker might
+deadlock all 10 MaxStartups connections before obtaining a root shell;
+we have not tried to work around this problem because our ultimate goal
+was to exploit a modern OpenSSH version anyway.
+
+
+========================================================================
+SSH-2.0-OpenSSH_9.2p1 Debian-2+deb12u2 (Debian 12.5.0, from 2024)
+========================================================================
+
+------------------------------------------------------------------------
+Theory
+------------------------------------------------------------------------
+
+    Now you're ready, take the demons head on
+        -- The Interrupters, "Be Gone"
+
+The SIGALRM handler of this OpenSSH version does not call packet_close()
+nor pam_end(); in fact it calls only one interesting function, syslog():
+
+------------------------------------------------------------------------
+ 358 grace_alarm_handler(int sig)
+ 359 {
+ ...
+ 370         sigdie("Timeout before authentication for %s port %d",
+ 371             ssh_remote_ipaddr(the_active_state),
+ 372             ssh_remote_port(the_active_state));
+------------------------------------------------------------------------
+ 96 #define sigdie(...)             sshsigdie(__FILE__, __func__, __LINE__, 0, SYSLOG_LEVEL_ERROR, NULL, __VA_ARGS__)
+------------------------------------------------------------------------
+451 sshsigdie(const char *file, const char *func, int line, int showfunc,
+452     LogLevel level, const char *suffix, const char *fmt, ...)
+453 {
+...
+457         sshlogv(file, func, line, showfunc, SYSLOG_LEVEL_FATAL,
+458             suffix, fmt, args);
+------------------------------------------------------------------------
+464 sshlogv(const char *file, const char *func, int line, int showfunc,
+465     LogLevel level, const char *suffix, const char *fmt, va_list args)
+466 {
+...
+489         do_log(level, forced, suffix, fmt2, args);
+------------------------------------------------------------------------
+337 do_log(LogLevel level, int force, const char *suffix, const char *fmt,
+338     va_list args)
+339 {
+...
+419                 syslog(pri, "%.500s", fmtbuf);
+------------------------------------------------------------------------
+
+Our two key questions, then, are: Does the syslog() of this Debian's
+glibc (2.36) call async-signal-unsafe functions such as malloc() and
+free()? And if yes, does this glibc still take a mandatory lock when
+entering the functions of the malloc family?
+
+- Luckily for us attackers, the answer to our first question is yes; if,
+  and only if, the syslog() inside the SIGALRM handler is the very first
+  call to syslog(), then __localtime64_r() (which is called by syslog())
+  calls malloc(304) to allocate a FILE structure (at line 166) and calls
+  malloc(4096) to allocate an internal read buffer (at line 186):
+
+------------------------------------------------------------------------
+ 28 __localtime64_r (const __time64_t *t, struct tm *tp)
+ 29 {
+ 30   return __tz_convert (*t, 1, tp);
+------------------------------------------------------------------------
+567 __tz_convert (__time64_t timer, int use_localtime, struct tm *tp)
+568 {
+...
+577   tzset_internal (tp == &_tmbuf && use_localtime);
+------------------------------------------------------------------------
+367 tzset_internal (int always)
+368 {
+...
+405   __tzfile_read (tz, 0, NULL);
+------------------------------------------------------------------------
+105 __tzfile_read (const char *file, size_t extra, char **extrap)
+106 {
+...
+109   FILE *f;
+...
+166   f = fopen (file, "rce");
+...
+186   if (__builtin_expect (__fread_unlocked ((void *) &tzhead, sizeof (tzhead),
+187                                           1, f) != 1, 0)
+------------------------------------------------------------------------
+
+  Note: because we do not control anything about these malloc()ations
+  (not their order, not their sizes, not their contents), we took the
+  "rce" at line 166 as a much-needed good omen.
+
+- And luckily for us, the answer to our second question is no; since
+  October 2017, the glibc's malloc functions do not take any lock
+  anymore, when single-threaded (like sshd):
+
+  https://sourceware.org/git?p=glibc.git;a=commit;h=a15d53e2de4c7d83bda251469d92a3c7b49a90db
+  https://sourceware.org/git?p=glibc.git;a=commit;h=3f6bb8a32e5f5efd78ac08c41e623651cc242a89
+  https://sourceware.org/git?p=glibc.git;a=commit;h=905a7725e9157ea522d8ab97b4c8b96aeb23df54
+
+Moreover, this Debian version suffers from the ASLR weakness described
+in the following great blog posts (by Justin Miller and Mathias Krause,
+respectively):
+
+  https://zolutal.github.io/aslrnt/
+  https://grsecurity.net/toolchain_necromancy_past_mistakes_haunting_aslr
+
+Concretely, in the case of sshd on i386, every memory mapping is
+randomized normally (sshd's PIE, the heap, most libraries, the stack),
+but the glibc itself is always mapped either at address 0xb7200000 or at
+address 0xb7400000; in other words, we can correctly guess the glibc's
+address half of the time (a small price to pay for defeating ASLR). In
+our exploit we assume that the glibc is mapped at address 0xb7400000,
+because it is slightly more common than 0xb7200000.
+
+Our next question is: which code paths inside the glibc's malloc
+functions, if interrupted by SIGALRM at the right time, leave the heap
+in an inconsistent state, exploitable during one of the malloc() calls
+inside the SIGALRM handler?
+
+We found several interesting (and surprising!) code paths, but the one
+we chose involves only relative sizes, not absolute addresses (unlike
+various code paths inside unlink_chunk(), for example); this difference
+might prove crucial for a future amd64 exploit. This code path, inside
+malloc(), splits a large free chunk (victim) into two smaller chunks;
+the first chunk is returned to malloc()'s caller (at line 4345) and the
+second chunk (remainder) is linked into an unsorted list of free chunks
+(at lines 4324-4327):
+
+------------------------------------------------------------------------
+1449 #define set_head(p, s)       ((p)->mchunk_size = (s))
+------------------------------------------------------------------------
+3765 _int_malloc (mstate av, size_t bytes)
+3766 {
+....
+3798   nb = checked_request2size (bytes);
+....
+4295               size = chunksize (victim);
+....
+4300               remainder_size = size - nb;
+....
+4316                   remainder = chunk_at_offset (victim, nb);
+....
+4320                   bck = unsorted_chunks (av);
+4321                   fwd = bck->fd;
+....
+4324                   remainder->bk = bck;
+4325                   remainder->fd = fwd;
+4326                   bck->fd = remainder;
+4327                   fwd->bk = remainder;
+....
+4337                   set_head (victim, nb | PREV_INUSE |
+4338                             (av != &main_arena ? NON_MAIN_ARENA : 0));
+4339                   set_head (remainder, remainder_size | PREV_INUSE);
+....
+4343               void *p = chunk2mem (victim);
+....
+4345               return p;
+------------------------------------------------------------------------
+
+- If this code path is interrupted by SIGALRM *after* line 4327 but
+  *before* line 4339, then the remainder chunk of this split is already
+  linked into the unsorted list of free chunks (lines 4324-4327), but
+  its size field (mchunk_size) is not yet initialized (line 4339).
+
+- If we are able to control its size field (through leftovers from
+  previous heap allocations), then we can make this remainder chunk
+  larger and overlap with other heap chunks, and therefore corrupt heap
+  memory when this enlarged, overlapping remainder chunk is eventually
+  malloc()ated and written to (inside the SIGALRM handler).
+
+Our last question, then, is: given that we do not control anything about
+the malloc() calls inside the SIGALRM handler, what can we overwrite in
+the heap to achieve arbitrary code execution before sshd calls _exit()
+(in sshsigdie())?
+
+Because __tzfile_read() (inside the SIGALRM handler) malloc()ates a FILE
+structure in the heap (at line 166 above), and because FILE structures
+have a long history of abuse for arbitrary code execution, we decided to
+aim our heap corruption at this FILE structure. This is, however, easier
+said than done: our heap corruption is very limited, and FILE structures
+have been significantly hardened over the years (by IO_validate_vtable()
+and PTR_DEMANGLE(), for example).
+
+Eventually, we devised the following technique (which seems to be
+specific to the i386 glibc -- the amd64 glibc does not seem to use
+_vtable_offset at all):
+
+- with our limited heap corruption, we overwrite the _vtable_offset
+  field (a single signed char) of __tzfile_read()'s FILE structure;
+
+- the glibc's libio functions will therefore look for this FILE
+  structure's vtable pointer (a pointer to an array of function
+  pointers) at a non-zero offset (our overwritten _vtable_offset),
+  instead of the default zero offset;
+
+- we (attackers) can easily control this fake vtable pointer (through
+  leftovers from previous heap allocations), because the FILE structure
+  around this offset is not explicitly initialized by fopen();
+
+- to pass the glibc's security checks, our fake vtable pointer must
+  point somewhere into the __libc_IO_vtables section: we decided to
+  point it to the vtable for wide-character streams, _IO_wfile_jumps
+  (i.e., to 0xb761b740, since we assume that the glibc is mapped at
+  address 0xb7400000);
+
+- as a result, __fread_unlocked() (at line 186 above) calls
+  _IO_wfile_underflow() (instead of _IO_file_underflow()), which calls a
+  function pointer (__fct) that basically comes from a structure whose
+  pointer (_codecvt) is yet another field of the FILE structure;
+
+- we (attackers) can easily control this _codecvt pointer (through
+  leftovers from previous heap allocations, because this field of the
+  FILE structure is not explicitly initialized by fopen()), which also
+  allows us to control the __fct function pointer.
+
+In summary, by overwriting a single byte (_vtable_offset) of the FILE
+structure malloc()ated by fopen(), we can call our own __fct function
+pointer and execute arbitrary code during __fread_unlocked().
+
+------------------------------------------------------------------------
+Practice
+------------------------------------------------------------------------
+
+    I wanted it perfect, no wrinkles in it
+        -- The Interrupters, "In the Mirror"
+
+To mount this attack against sshd's privileged child, let us first
+imagine the following heap layout (the "XXX"s are "barrier" chunks that
+allow us to make holes in the heap; for example, small memory-leaked
+chunks):
+
+---|----------------------------------------------|---|------------|---
+XXX|                  large hole                  |XXX| small hole |XXX
+---|----------------------------------------------|---|------------|---
+   |                     ~8KB                     |   |    320B    |
+
+- shortly before sshd receives the SIGALRM, we malloc()ate a ~4KB chunk
+  that splits the large ~8KB hole into two smaller chunks:
+
+---|-----------------------|----------------------|---|------------|---
+XXX| large allocated chunk | free remainder chunk |XXX| small hole |XXX
+---|-----------------------|----------------------|---|------------|---
+   |         ~4KB          |         ~4KB         |   |    320B    |
+
+- but if this malloc() is interrupted by SIGALRM *after* line 4327 but
+  *before* line 4339, then the remainder chunk of this split is already
+  linked into the unsorted list of free chunks, but its size field is
+  under our control (through leftovers from previous heap allocations),
+  and this artificially enlarged remainder chunk overlaps with the
+  following small hole:
+
+---|-----------------------|----------------------|---|------------|---
+XXX| large allocated chunk | real remainder chunk |XXX| small hole |XXX
+---|-----------------------|----------------------|---|------------|---
+   |         ~4KB          |<------------------------------------->|
+                             artificially enlarged remainder chunk
+
+- when the SIGALRM handler calls syslog() and hence __tzfile_read(),
+  fopen() malloc()ates the small hole for its FILE structure, and
+  __fread_unlocked() malloc()ates a 4KB read buffer, thereby splitting
+  the enlarged remainder chunk in two (the 4KB read buffer and a small
+  remainder chunk):
+
+---|-----------------------|----------------------|---|------------|---
+XXX| large allocated chunk |                      |XXX|    FILE    |XXX
+---|-----------------------|----------------------|---|--|---------|---
+   |         ~4KB          |<--------------------------->|<------->|
+                                   4KB read buffer        remainder
+
+- we therefore overwrite parts of the FILE structure with the internal
+  header of this small remainder chunk: more precisely, we overwrite the
+  FILE's _vtable_offset with the third byte of this header's bk field,
+  which is a pointer to the unsorted list of free chunks, 0xb761d7f8
+  (i.e., we overwrite _vtable_offset with 0x61);
+
+- then, as explained in the "Theory" subsection, __fread_unlocked()
+  calls _IO_wfile_underflow() (instead of _IO_file_underflow()), which
+  calls our own __fct function pointer (through our own _codecvt
+  pointer) and executes our arbitrary code.
+
+  Note: we have not yet explained how to reliably go from a controlled
+  _codecvt pointer to a controlled __fct function pointer; we will do
+  so, but we must first solve a more pressing problem.
+
+Indeed, we learned from our work on older OpenSSH versions that we will
+never win this signal handler race condition if our large race window
+contains only one small race window. Consequently, we implemented the
+following strategy, based on the following heap layout:
+
+---|------------|---|------------|---|------------|---|------------|---
+XXX|large hole 1|XXX|small hole 1|XXX|large hole 2|XXX|small hole 2|...
+---|------------|---|------------|---|------------|---|------------|---
+   |    ~8KB    |   |    320B    |   |    ~8KB    |   |    320B    |
+
+The last packet that we send to sshd (shortly before the delivery of
+SIGALRM) forces sshd to perform the following sequence of malloc()
+calls: malloc(~4KB), malloc(304), malloc(~4KB), malloc(304), etc.
+
+1/ Our first malloc(~4KB) splits the large hole 1 in two:
+
+- if this first split is interrupted by SIGALRM at the right time, then
+  the fopen() inside the SIGALRM handler malloc()ates the small hole 1
+  for its FILE structure, and we achieve arbitrary code execution as
+  explained above;
+
+- if not, then we malloc()ate the small hole 1 ourselves with our first
+  malloc(304), and:
+
+2/ Our second malloc(~4KB) splits the large hole 2 in two:
+
+- if this second split is interrupted by SIGALRM at the right time, then
+  the fopen() inside the SIGALRM handler malloc()ates the small hole 2
+  for its FILE structure, and we achieve arbitrary code execution as
+  explained above;
+
+- if not, then we malloc()ate the small hole 2 ourselves with our second
+  malloc(304), etc.
+
+We were able to make 27 pairs of such large and small holes in sshd's
+heap (28 would exceed PACKET_MAX_SIZE, 256KB): our large race window now
+contains 27 small race windows! Achieving this complex heap layout was
+extremely painful and time-consuming, but the two highlights are:
+
+- We abuse sshd's public-key parsing code to perform arbitrary sequences
+  of malloc() and free() calls (at lines 1805 and 573):
+
+------------------------------------------------------------------------
+1754 cert_parse(struct sshbuf *b, struct sshkey *key, struct sshbuf *certbuf)
+1755 {
+....
+1797         while (sshbuf_len(principals) > 0) {
+....
+1805                 if ((ret = sshbuf_get_cstring(principals, &principal,
+....
+1820                 key->cert->principals[key->cert->nprincipals++] = principal;
+1821         }
+------------------------------------------------------------------------
+ 562 cert_free(struct sshkey_cert *cert)
+ 563 {
+ ...
+ 572         for (i = 0; i < cert->nprincipals; i++)
+ 573                 free(cert->principals[i]);
+------------------------------------------------------------------------
+
+- We were unable to find a memory leak for our small "barrier" chunks;
+  instead, we use tcache chunks (which are never really freed, because
+  their inuse bit is never cleared) as makeshift "barrier" chunks.
+
+To reliably achieve this heap layout, we send five different public-key
+packets to sshd (packets a/ to d/ can be sent long before SIGALRM; most
+of packet e/ can also be sent long before SIGALRM, but its very last
+byte must be sent at the very last moment):
+
+a/ We malloc()ate and free() a variety of tcache chunks, to ensure that
+the heap allocations that we do not control end up in these tcache
+chunks and do not interfere with our careful heap layout.
+
+b/ We malloc()ate and free() chunks of various sizes, to make our 27
+pairs of large and small holes (and the corresponding "barrier" chunks).
+
+c/ We malloc()ate and free() ~4KB chunks and 320B chunks, to:
+
+- write the fake header (the large size field) of our potentially
+  enlarged remainder chunk, into the middle of our large holes;
+
+- write the fake footer of our potentially enlarged remainder chunk, to
+  the end of our small holes (to pass the glibc's security checks);
+
+- write our fake vtable and _codecvt pointers, into our small holes
+  (which are potential FILE structures).
+
+d/ We malloc()ate and free() one very large string (nearly 256KB), to
+ensure that our large and small holes are removed from the unsorted list
+of free chunks and placed into their respective malloc bins.
+
+e/ We force sshd to perform our final sequence of malloc() calls
+(malloc(~4KB), malloc(304), malloc(~4KB), malloc(304), etc), to open our
+27 small race windows.
+
+Attentive readers may have noticed that we have still not addressed
+(literally and figuratively) the problem of _codecvt. In fact, _codecvt
+is a pointer to a structure (_IO_codecvt) that contains a pointer to a
+structure (__gconv_step) that contains the __fct function pointer that
+allows us to execute arbitrary code. To reliably control __fct through
+_codecvt, we simply point _codecvt to one of the glibc's malloc bins,
+which conveniently contains a pointer to one of our free chunks in the
+heap, which contains our own __fct function pointer to arbitrary glibc
+code (all of these glibc addresses are known to us, because we assume
+that the glibc is mapped at address 0xb7400000).
+
+------------------------------------------------------------------------
+Timing
+------------------------------------------------------------------------
+
+    We're running out of time
+        -- The Interrupters, "As We Live"
+
+As we implemented this third exploit, it became clear that we could not
+simply re-use the timing strategy that we had used against the two older
+OpenSSH versions: we were never winning this new race condition.
+Eventually, we understood why:
+
+- It takes a long time (~10ms) for sshd to parse our fifth and last
+  public key (packet e/ above); in other words, our large race window is
+  too large (our 27 small race windows are like needles in a haystack).
+
+- The user_specific_delay() that was introduced recently (OpenSSH 7.8p1)
+  delays sshd's response to our last public-key packet by up to ~9ms and
+  therefore destroys our feedback-based timing strategy.
+
+As a result, we developed a completely different timing strategy:
+
+- from time to time, we send our last public-key packet with a little
+  mistake that produces an error response (lines 138-142 below), right
+  before the call to sshkey_from_blob() that parses our public key;
+
+- from time to time, we send our last public-key packet with another
+  little mistake that produces an error response (lines 151-155 below),
+  right after the call to sshkey_from_blob() that parses our public key;
+
+- the difference between these two response times is the time that it
+  takes for sshd to parse our last public key, and this allows us to
+  precisely time the transmission of our last packets (to ensure that
+  sshd has the time to parse our public key in the unprivileged child,
+  send it to the privileged child, and start to parse it there, before
+  the delivery of SIGALRM).
+
+------------------------------------------------------------------------
+ 88 userauth_pubkey(struct ssh *ssh, const char *method)
+ 89 {
+...
+138         if (pktype == KEY_UNSPEC) {
+139                 /* this is perfectly legal */
+140                 verbose_f("unsupported public key algorithm: %s", pkalg);
+141                 goto done;
+142         }
+143         if ((r = sshkey_from_blob(pkblob, blen, &key)) != 0) {
+144                 error_fr(r, "parse key");
+145                 goto done;
+146         }
+...
+151         if (key->type != pktype) {
+152                 error_f("type mismatch for decoded key "
+153                     "(received %d, expected %d)", key->type, pktype);
+154                 goto done;
+155         }
+------------------------------------------------------------------------
+
+With this change in strategy, it takes ~10,000 tries on average to win
+the race condition; i.e., with 100 connections (MaxStartups) accepted
+per 120 seconds (LoginGraceTime), it takes ~3-4 hours on average to win
+the race condition, and ~6-8 hours to obtain a remote root shell
+(because of ASLR).
+
+
+========================================================================
+Towards an amd64 exploit
+========================================================================
+
+    What's your plan for tomorrow?
+        -- The Interrupters, "Take Back the Power"
+
+We decided to target Rocky Linux 9 (a Red Hat Enterprise Linux 9
+derivative), from "Rocky-9.4-x86_64-minimal.iso", for two reasons:
+
+- its OpenSSH version (8.7p1) is vulnerable to this signal handler race
+  condition and its glibc is always mapped at a multiple of 2MB (because
+  of the ASLR weakness discussed in the previous "Theory" subsection),
+  which makes partial pointer overwrites much more powerful;
+
+- the syslog() function (which is async-signal-unsafe but is called by
+  sshd's SIGALRM handler) of this glibc version (2.34) internally calls
+  __open_memstream(), which malloc()ates a FILE structure in the heap,
+  and also calls calloc(), realloc(), and free() (which gives us some
+  much-needed freedom).
+
+With a heap corruption as a primitive, two FILE structures malloc()ated
+in the heap, and 21 fixed bits in the glibc's addresses, we believe that
+this signal handler race condition is exploitable on amd64 (probably not
+in ~6-8 hours, but hopefully in less than a week). Only time will tell.
+
+Side note: we discovered that Ubuntu 24.04 does not re-randomize the
+ASLR of its sshd children (it is randomized only once, at boot time); we
+tracked this down to the patch below, which turns off sshd's rexec_flag.
+This is generally a bad idea, but in the particular case of this signal
+handler race condition, it prevents sshd from being exploitable: the
+syslog() inside the SIGALRM handler does not call any of the malloc
+functions, because it is never the very first call to syslog().
+
+  https://git.launchpad.net/ubuntu/+source/openssh/tree/debian/patches/systemd-socket-activation.patch
+
+
+========================================================================
+Patches and mitigation
+========================================================================
+
+    The storm has come and gone
+        -- The Interrupters, "Good Things"
+
+On June 6, 2024, this signal handler race condition was fixed by commit
+81c1099 ("Add a facility to sshd(8) to penalise particular problematic
+client behaviours"), which moved the async-signal-unsafe code from
+sshd's SIGALRM handler to sshd's listener process, where it can be
+handled synchronously:
+
+  https://github.com/openssh/openssh-portable/commit/81c1099d22b81ebfd20a334ce986c4f753b0db29
+
+Because this fix is part of a large commit (81c1099), on top of an even
+larger defense-in-depth commit (03e3de4, "Start the process of splitting
+sshd into separate binaries"), it might prove difficult to backport. In
+that case, the signal handler race condition itself can be fixed by
+removing or commenting out the async-signal-unsafe code from the
+sshsigdie() function; for example:
+
+------------------------------------------------------------------------
+sshsigdie(const char *file, const char *func, int line, int showfunc,
+    LogLevel level, const char *suffix, const char *fmt, ...)
+{
+#if 0
+        va_list args;
+
+        va_start(args, fmt);
+        sshlogv(file, func, line, showfunc, SYSLOG_LEVEL_FATAL,
+            suffix, fmt, args);
+        va_end(args);
+#endif
+        _exit(1);
+}
+------------------------------------------------------------------------
+
+Finally, if sshd cannot be updated or recompiled, this signal handler
+race condition can be fixed by simply setting LoginGraceTime to 0 in the
+configuration file. This makes sshd vulnerable to a denial of service
+(the exhaustion of all MaxStartups connections), but it makes it safe
+from the remote code execution presented in this advisory.
+
+
+========================================================================
+Acknowledgments
+========================================================================
+
+We thank OpenSSH's developers for their outstanding work and close
+collaboration on this release. We also thank the distros@openwall.
+Finally, we dedicate this advisory to Sophia d'Antoine.
+
+
+========================================================================
+Timeline
+========================================================================
+
+2024-05-19: We contacted OpenSSH's developers. Successive iterations of
+patches and patch reviews followed.
+
+2024-06-20: We contacted the distros@openwall.
+
+2024-07-01: Coordinated Release Date.
